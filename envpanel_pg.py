@@ -8,8 +8,8 @@ import psycopg2.extras
 from json import JSONEncoder
 app = Flask(__name__)
 
-USR="user"
-PWD="pass"
+USR="usr"
+PWD="pwd"
 DATABASE="host=10.77.0.1 dbname=env_measures  user={} password={}".format(USR, PWD)
 
 #region DAL
@@ -78,7 +78,10 @@ def getMeasuresByLocationAndTimeRange(locid, startdate=None, enddate=None):
             enddate=datetime.datetime.now()
 
 
-        result=query_db('SELECT * from messwerte WHERE locationid=%s and timestamp between %s and %s',
+        result=query_db("""SELECT * from messwerte WHERE locationid=%s and temp is not null and hum is not null
+                        and hum >-20.0
+                        and temp >-20.0
+                        and timestamp between %s and %s""",
                         [locid, startdate, enddate],rfac=False)
     except Exception as e:
         result = -1
